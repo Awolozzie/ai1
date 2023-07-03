@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Credit Card Form</title>
+  <link rel="stylesheet" type="text/css" href="../css/assign3.css">
+  <script src="../js/assign3.js"></script>
+</head>
+<body>
+  <form id="credit-card-form" onsubmit="return validateForm()" method="post">
+    <h1>Credit Card Details</h1>
+    <fieldset>
+        <legend>Customer Details</legend>
+		<table>
+		<tr>
+        <td><label for="firstname">First Name:</label></td>
+        <td><input type="text" id="firstname" name="firstname" placeholder="First Name" onfocus="changeStyle(this)" onblur="changeStyle(this)"></td>
+		<span id="errorMessages"></span>
+        </tr>
+		<tr>
+		<td><label for="lastname">Last Name:</label></td>
+        <td><input type="text" id="lastname" name="lastname" placeholder="Last Name" onfocus="changeStyle(this)" onblur="changeStyle(this)"></td>
+        </tr>
+		<tr>
+        <td><label for="email">Email Address:</label></td>
+        <td><input type="email" id="email" name="email" placeholder="Email Address" onfocus="changeStyle(this)" onblur="changeStyle(this)"></td>
+        <span id="errorMessages"></span>
+		</tr>
+		<tr>
+        <td><label for="postcode">Postcode:</label></td>
+        <td><input type="text" id="postcode" name="postcode" placeholder="Postcode" onfocus="changeStyle(this)" onblur="changeStyle(this)" pattern="[0-9]{4}"></td>
+		</tr>
+		</table>
+	</fieldset>
+        <br>
+    <fieldset>
+	    <legend>Payment Details</legend>
+		<table>
+		<tr>
+        <td><label for="payment-type">Payment Type:</label></td>
+        <td><select id="payment-type" name="payment-type" onfocus="changeStyle(this)" onblur="changeStyle(this)" >
+            <option value="">Please select one</option>
+            <option value="visa">Visa</option>
+            <option value="mastercard">Mastercard</option>
+            <option value="amex">Amex</option>
+        </select></td>
+		</tr>
+		<tr>
+        <td><label for="credit-card-number">Credit Card Number:</label></td>
+        <td><input type="text" id="credit-card-number" name="credit-card-number" placeholder="Credit Card Number" onfocus="changeStyle(this)" onblur="changeStyle(this)" pattern="[0-9]{16}"></td>
+        </tr>
+		<tr>
+        <td><label for="ccv">CCV:</label></td>
+        <td><input type="text" id="ccv" name="ccv" placeholder="CVV" onfocus="changeStyle(this)" onblur="changeStyle(this)"  pattern="[0-9]{3}"></td>
+        </tr>
+		<tr>
+        <td><label for="expiry-month">Exp MM/YY:</label></td>
+        <td><select id="expiry-month" name="expiry-month" onfocus="changeStyle(this)" onblur="changeStyle(this)" >
+            <option value="">Month</option>
+            <option value="01">01</option>
+            <option value="02">02</option>
+            <option value="03">03</option>
+            <option value="04">04</option>
+            <option value="05">05</option>
+            <option value="06">06</option>
+            <option value="07">07</option>
+            <option value="08">08</option>
+            <option value="09">09</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+        </select>
+        <label for="expiry-year"></label>
+        <select id="expiry-year" name="expiry-year" onfocus="changeStyle(this)" onblur="changeStyle(this)" >
+            <option value="">Year</option>
+            <option value="2022">2023</option>
+            <option value="2023">2024</option>
+            <option value="2024">2025</option>
+            <option value="2025">2026</option>
+            <option value="2026">2027</option>
+            <option value="2027">2028</option>
+        </select>
+		</table>
+	</fieldset>
+	  <script>
+		<div id="errorMessages"></div> <!-- Error messages will be shown here -->
+		<button onclick="submit" value="Submit">Submit</button>
+        <button onclick="showDialogBox()">Help</button>
+		<button onclick="goToWebsite()">Go to other Pages</button>
+  </form>
+</body>
+</html>
+// Check that required fields are not blank
+function validateForm() {
+  var firstname = document.getElementById('firstname').value;
+  var lastname = document.getElementById('lastname').value;
+  var email = document.getElementById('email').value;
+  var postcode = document.getElementById('postcode').value;
+  var paymentType = document.getElementById('payment-type').value;
+  var expiryMonth = document.getElementById('expiry-month').value;
+  var expiryYear = document.getElementById('expiry-year').value;
+  var creditCardNumber = document.getElementById('credit-card-number').value;
+  var ccv = document.getElementById('ccv').value;
+  var errorMessages = document.getElementById('error-messages');
+
+  // Reset error messages
+  errorMessages.innerHTML = "";
+
+  // Check if any required fields are blank
+  if (
+    name === "" ||
+    email === "" ||
+    postcode === "" ||
+    paymentType === "" ||
+    expiryMonth === "" ||
+    expiryYear === "" ||
+    creditCardNumber === "" ||
+    ccv === ""
+  ) {
+    errorMessages.innerHTML = "Please fill in all required fields.";
+    return false;
+  }
+
+  // Check email address format
+  if (!validateEmail(email)) {
+    errorMessages.innerHTML = "Please enter a valid email address.";
+	document.getElementById("email").focus();
+    return false;
+  }
+
+  // Check postcode format
+  if (!validatePostcode(postcode)) {
+    errorMessages.innerHTML = "Please enter a valid postcode (4 digits only).";
+    return false;
+  }
+
+  // Check credit card number format
+  if (!validateCreditCardNumber(creditCardNumber)) {
+    errorMessages.innerHTML = "Please enter a valid credit card number (16 digits only).";
+    return false;
+  }
+
+  // Check ccv format
+  if (!validateCCV(ccv)) {
+    errorMessages.innerHTML = "Please enter a valid CCV (3 digits only).";
+    return false;
+  }
+
+  // Credit card validation: check if card has expired
+  var currentYear = new Date().getFullYear().toString().substr(-2); // Get last two digits of current year
+  var currentMonth = new Date().getMonth() + 1; // Get current month (0-11) and add 1
+  var cardExpiryYear = parseInt(expiryYear);
+  var cardExpiryMonth = parseInt(expiryMonth);
+
+  if (
+    cardExpiryYear < currentYear ||
+    (cardExpiryYear === currentYear && cardExpiryMonth < currentMonth)
+  ) {
+    errorMessages.innerHTML = "Your credit card has expired.";
+    return false;
+  }
+
+  // Validation passed - form can be submitted
+  return true;
+}
+
+// Email address validation
+function validateEmail(email) {
+  var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+// Postcode validation
+function validatePostcode(postcode) {
+  var postcodeRegex = /^[0-9]{4}$/;
+  return postcodeRegex.test(postcode);
+}
+
+// Credit card number validation
+function validateCreditCardNumber(creditCardNumber) {
+  var creditCardRegex = /^[0-9]{16}$/;
+  return creditCardRegex.test(creditCardNumber);
+}
+
+// CCV validation
+function validateCCV(ccv) {
+  var ccvRegex = /^[0-9]{3}$/;
+  return ccvRegex.test(ccv);
+}
+function changeStyle(element) {
+    if (element === document.activeElement) {
+      // Change color and style when the input is focused
+      element.style.color = "blue";
+      element.style.fontWeight = "bold";
+	  element.style.backgroundColor = "lightblue";
+    } else {
+      // Change color and style when the input is blurred
+      element.style.color = "black";
+      element.style.fontWeight = "normal";
+	  element.style.backgroundColor = "white";
+    }
+  }
+//creates function for button "go to other websites"
+function goToWebsite() {
+	let validChoice = false;
+	let errorMessage = "Payment Options\n";
+// creates and checks list of options
+	while (!validChoice) {
+		const usersChoice = prompt(
+			errorMessage + "\n1.Postbillpay \n2.Afterpay \n3.Applepay"
+		);
+		if (usersChoice === null) {
+			return;
+		}
+// opens new window of certain size to valid choice
+		switch (usersChoice) {
+			case "1":
+				window.open(
+					"https://www.postbillpay.com.au/",
+					"blank",
+					"width=800,height=800"
+				);
+				validChoice = true;
+				break;
+			case "2":
+				window.open(
+					"https://www.afterpay.com/en-AU",
+					"blank",
+					"width=800,height=800"
+				);
+				validChoice = true;
+				break;
+			case "3":
+				window.open(
+					"https://www.apple.com/au/apple-pay/",
+					"blank",
+					"width=800,height=800"
+				);
+				validChoice = true;
+				break;
+// asks for valid choice
+			default:
+				errorMessage = "Invalid choice. ";
+				break;
+		}
+	}
+}
+//creates a pop help menu when click help button
+    function showDialogBox() {
+        let myList = [
+          "Check all required fields have been filled in",
+          "Email address is at least 8 characters and contains an @ character and .",
+          "Check the postcode contains 4 numbers (not characters)",
+          "Check the credit card number has 16 numbers (not characters)",
+          "Check the ccv has 3 numbers (not characters)",
+          "Check the credit card has not expired"
+        ];
+        let listString = myList.join("\n"); // convert the list to a string with line breaks between items
+        let dialogBox = confirm(listString, "Help"); // display the list in a dialog box
+        if (dialogBox) {
+          console.log("User clicked OK.");
+        } else {
+          console.log("User clicked Cancel.");
+        }
+      }
+</script>
+<css>
+input[type="text"], input[type="email"], select {
+  width: 200px;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+
+input[type="submit"] {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+#error-messages {
+  color: red;
+  margin-top: 10px;
+}
+</css>
